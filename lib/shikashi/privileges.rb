@@ -242,11 +242,21 @@ public
         end
       end
 
-      tmp = @allowed_instances[recv.class.object_id]
-      if tmp
-        if tmp.allowed?(method_name)
-        @last_allowed = tmp
-        return true
+      last_class = recv.class
+      while true
+        tmp = @allowed_instances[last_class.object_id]
+        if tmp
+          if tmp.allowed?(method_name)
+            @last_allowed = tmp
+            return true
+          end
+        end
+
+        if last_class
+          break if last_class == Object
+          last_class = last_class.superclass
+        else
+          break
         end
       end
 
