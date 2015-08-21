@@ -10,8 +10,12 @@ Gem::Specification.new do |s|
   s.platform = Gem::Platform::RUBY
   s.summary = 'shikashi is a ruby sandbox that permits the execution of "unprivileged" scripts by defining the permitted methods and constants the scripts can invoke with a white list logic'
   s.homepage = "http://github.com/tario/shikashi"
+
+  s.add_development_dependency 'rake', '~> 10.4.2'
+  s.add_development_dependency 'minitest'
+  s.add_development_dependency 'minitest-reporters'
+
   s.add_dependency "evalhook", ">= 0.6.0"
-  s.add_dependency "getsource", ">= 0.1.0"
   s.has_rdoc = true
   s.extra_rdoc_files = [ 'README' ]
 #  s.rdoc_options << '--main' << 'README'

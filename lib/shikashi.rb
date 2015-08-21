@@ -18,6 +18,12 @@ you should have received a copy of the gnu general public license
 along with shikashi.  if not, see <http://www.gnu.org/licenses/>.
 
 =end
-require "shikashi/sandbox"
+require 'evalhook'
+require 'timeout'
+require 'shikashi/privileges'
+require 'shikashi/pick_argument'
+require 'shikashi/method'
+require 'shikashi/unbound_method'
+require 'shikashi/sandbox'
 
 

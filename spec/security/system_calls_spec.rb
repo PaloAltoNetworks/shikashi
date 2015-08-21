@@ -1,3 +1,5 @@
+# Encoding: utf-8
+
 =begin
 
 Authors:
@@ -22,38 +24,37 @@ you should have received a copy of the gnu general public license
 along with shikashi.  if not, see <http://www.gnu.org/licenses/>.
 
 =end
-require "test/unit"
-require "rubygems"
-require "shikashi"
+require File.expand_path(File.dirname(__FILE__) + '/../test_helper')
 
-describe Shikashi::Sandbox, "Shikashi sandbox" do
+class SystemCallsSpect < MiniTest::Spec
+  describe Shikashi::Sandbox, 'Shikashi sandbox' do
 
-  it "should raise SecurityError when try to run shell cmd with backsticks" do
-    priv = Shikashi::Privileges.new
-    lambda {
-      Shikashi::Sandbox.new.run("`ls`", priv)
-    }.should raise_error(SecurityError)
+    it 'should raise SecurityError when try to run shell cmd with backsticks' do
+      priv = Shikashi::Privileges.new
+      lambda {
+        Shikashi::Sandbox.new.run('`ls`', priv)
+      }.must_raise(SecurityError)
+    end
+
+    it 'should raise SecurityError when try to run shell cmd with percent' do
+      priv = Shikashi::Privileges.new
+      lambda {
+        Shikashi::Sandbox.new.run('%x[ls]', priv)
+      }.must_raise(SecurityError)
+    end
+
+    it 'should raise SecurityError when try to run shell cmd by calling system method' do
+      priv = Shikashi::Privileges.new
+      lambda {
+        Shikashi::Sandbox.new.run('system("ls")', priv)
+      }.must_raise(SecurityError)
+    end
+
+    it 'should raise SecurityError when try to run shell cmd by calling exec method' do
+      priv = Shikashi::Privileges.new
+      lambda {
+        Shikashi::Sandbox.new.run('exec("ls")', priv)
+      }.must_raise(SecurityError)
+    end
   end
-
-  it "should raise SecurityError when try to run shell cmd with percent" do
-    priv = Shikashi::Privileges.new
-    lambda {
-      Shikashi::Sandbox.new.run("%x[ls]", priv)
-    }.should raise_error(SecurityError)
-  end
-
-  it "should raise SecurityError when try to run shell cmd by calling system method" do
-    priv = Shikashi::Privileges.new
-    lambda {
-      Shikashi::Sandbox.new.run("system('ls')", priv)
-    }.should raise_error(SecurityError)
-  end
-
-  it "should raise SecurityError when try to run shell cmd by calling exec method" do
-    priv = Shikashi::Privileges.new
-    lambda {
-      Shikashi::Sandbox.new.run("exec('ls')", priv)
-    }.should raise_error(SecurityError)
-  end
-
 end

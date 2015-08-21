@@ -18,13 +18,6 @@ you should have received a copy of the gnu general public license
 along with shikashi.  if not, see <http://www.gnu.org/licenses/>.
 
 =end
-require "rubygems"
-require "evalhook"
-require "shikashi/privileges"
-require "shikashi/pick_argument"
-require "getsource"
-require "timeout"
-
 module Shikashi
 
   class << self
@@ -32,8 +25,6 @@ module Shikashi
   end
 
   module Timeout
-
-
     #raised when reach the timeout in a script execution restricted by timeout (see Sandbox#run)
     class Error < Exception
 
@@ -192,7 +183,6 @@ module Shikashi
             end
           end
         end
-
         const_value(sandbox.base_namespace.const_get(name))
       end
 
@@ -216,30 +206,25 @@ module Shikashi
       end
 
       def handle_method(klass, recv, method_name)
-        source = nil
-
         method_id = 0
-
         if method_name
-
           source = self.get_caller
-          m = begin
+          m      = begin
             klass.instance_method(method_name)
           rescue
             method_name = :method_missing
             klass.instance_method(:method_missing)
           end
+
           dest_source = m.body.file
 
-          privileges = nil
-          if source != dest_source then
+          if source != dest_source
             privileges = sandbox.privileges[source]
 
-            unless privileges then
+            unless privileges
                raise SecurityError.new("Cannot invoke method #{method_name} on object of class #{klass}")
             else
-#              privileges = privileges.dup
-              loop_source = source
+              loop_source     = source
               loop_privileges = privileges
 
               while loop_privileges and loop_source != dest_source
@@ -247,7 +232,6 @@ module Shikashi
                   raise SecurityError.new("Cannot invoke method #{method_name} on object of class #{klass}")
                 end
 
-                loop_privileges = nil
                 loop_source = sandbox.chain[loop_source]
 
                 if dest_source then
@@ -255,7 +239,6 @@ module Shikashi
                 else
                   loop_privileges = nil
                 end
-
               end
             end
           end
@@ -264,10 +247,7 @@ module Shikashi
           return nil if method_name == :binding
 
           nil
-
         end
-
-
       end # if
 
       def get_caller
@@ -515,6 +495,6 @@ private
   end
 end
 
-Shikashi.global_binding = binding()
+Shikashi.global_binding ||= binding()
 
 

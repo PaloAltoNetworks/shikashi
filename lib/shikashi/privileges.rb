@@ -168,7 +168,7 @@ public
     hash_entry(@allowed_klass_methods, klass.object_id)
   end
 
-#allow the execution of method named method_name whereever
+#allow the execution of method named method_name wherever
 #
 #Example:
 # privileges.allow_method(:foo)

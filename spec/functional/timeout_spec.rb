@@ -1,3 +1,5 @@
+# Encoding: utf-8
+
 =begin
 
 This file is part of the shikashi project, http://github.com/tario/shikashi
@@ -18,40 +20,38 @@ you should have received a copy of the gnu general public license
 along with shikashi.  if not, see <http://www.gnu.org/licenses/>.
 
 =end
-require "test/unit"
-require "shikashi"
+require File.expand_path(File.dirname(__FILE__) + '/../test_helper')
 
-include Shikashi
+class TimeoutSpec < MiniTest::Spec
+  include Shikashi
 
-describe Sandbox, "Shikashi sandbox" do
+  describe Sandbox, 'Shikashi sandbox' do
 
-  def self.add_test(name, execution_delay, timeout)
-    if execution_delay > timeout
-      it "Should allow timeout of type #{name}" do
-        priv = Shikashi::Privileges.new
-        priv.allow_method :sleep
+    def self.add_test(name, execution_delay, timeout)
+      if execution_delay > timeout
+        it "Should allow timeout of type #{name}" do
+          priv = Shikashi::Privileges.new
+          priv.allow_method :sleep
 
-        lambda {
-        Sandbox.new.run "sleep #{execution_delay}", priv, :timeout => timeout
-        }.should raise_error(Shikashi::Timeout::Error)
+          lambda {
+            Sandbox.new.run "sleep #{execution_delay}", priv, :timeout => timeout
+          }.must_raise(Shikashi::Timeout::Error)
+        end
+      else
+        it "Should allow timeout of type #{name}" do
+          priv = Shikashi::Privileges.new
+          priv.allow_method :sleep
+
+          Sandbox.new.run "sleep #{execution_delay}", priv, :timeout => timeout
+        end
       end
-    else
-      it "Should allow timeout of type #{name}" do
-        priv = Shikashi::Privileges.new
-        priv.allow_method :sleep
-
-        Sandbox.new.run "sleep #{execution_delay}", priv, :timeout => timeout
-
-      end
-
     end
+
+    add_test 'basic',2,1
+    add_test 'float',0.2,0.1
+    add_test 'float_no_hit',0.1,0.2
+    add_test 'zero', 1,0
+    add_test 'zero_no_hit', 0,1
   end
-
-  add_test "basic",2,1
-  add_test "float",0.2,0.1
-  add_test "float_no_hit",0.1,0.2
-  add_test "zero", 1,0
-  add_test "zero_no_hit", 0,1
-
 end
 
